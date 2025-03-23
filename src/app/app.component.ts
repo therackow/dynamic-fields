@@ -1,21 +1,30 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { OnInit } from '@angular/core';
-import { dynamicFields } from './fields';
-import { CommonModule, JsonPipe } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
-  FormGroup,
   FormControl,
   UntypedFormGroup,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
 
+import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+  FontAwesomeModule,
+  IconDefinition,
+} from '@fortawesome/angular-fontawesome';
+import { faCalendar } from '@fortawesome/free-regular-svg-icons';
+
+import { dynamicFields } from './fields';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, JsonPipe, ReactiveFormsModule, CommonModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    NgbDatepickerModule,
+    FontAwesomeModule,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -24,6 +33,7 @@ export class AppComponent implements OnInit {
 
   fields: any = dynamicFields.fields;
   formGroup: UntypedFormGroup = new UntypedFormGroup({});
+  calendarIcon: IconDefinition = faCalendar;
 
   constructor() {}
 
@@ -31,7 +41,10 @@ export class AppComponent implements OnInit {
     console.log('Dynamic Fields:', this.fields);
     this.formGroup = new UntypedFormGroup({});
     this.fields.forEach((field: any) => {
-      const control = new FormControl('', this.getValidators(field));
+      const control = new FormControl(
+        field.default ? field.default : '',
+        this.getValidators(field),
+      );
       this.formGroup.addControl(field.formControlName, control);
     });
     this.formGroup.updateValueAndValidity();
@@ -55,6 +68,9 @@ export class AppComponent implements OnInit {
       }
       if (field.validation.email) {
         validators.push(Validators.email);
+      }
+      if (field.validation.pattern) {
+        validators.push(Validators.pattern(field.validation.pattern));
       }
     }
     return validators;

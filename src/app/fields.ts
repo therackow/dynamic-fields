@@ -1,3 +1,5 @@
+import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
+
 export const dynamicFields = {
   fields: [
     {
@@ -114,5 +116,80 @@ export const dynamicFields = {
         required: true,
       },
     },
+    {
+      label: 'Phone Number',
+      formControlName: 'phoneNumber',
+      type: 'text',
+      placeholder: 'Enter your phone number',
+      required: true,
+      validation: {
+        required: true,
+        pattern: '^\\d{3}-\\d{3}-\\d{4}$',
+      },
+      errorMessages: {
+        required: 'Phone number is required',
+        pattern: 'Phone number must be in the format XXX-XXX-XXXX',
+      },
+    },
+    {
+      label: 'Is Active',
+      formControlName: 'isActive',
+      type: 'checkbox',
+      required: false,
+      validation: {},
+      errorMessages: {},
+    },
+    {
+      label: 'Notes',
+      formControlName: 'notes',
+      type: 'textarea',
+      placeholder: 'Enter any additional notes',
+      required: false,
+      validation: {
+        maxLength: 200,
+      },
+      errorMessages: {
+        maxlength: 'Notes cannot exceed 200 characters',
+      },
+    },
+    {
+      label: 'Date of Birth',
+      formControlName: 'dob',
+      type: 'date',
+      placeholder: 'Select your date of birth',
+      required: true,
+      validation: {
+        required: true,
+        minDate: { year: 1900, month: 1, day: 1 },
+        maxDate: today(),
+      },
+      errorMessages: {
+        required: 'Date of birth is required',
+        minDate: 'Date of birth must be after 1900-01-01',
+        maxDate: 'Date of birth cannot be in the future',
+      },
+    },
+    {
+      label: 'Gender',
+      formControlName: 'gender',
+      type: 'radio',
+      options: [
+        { value: 'male', label: 'Male' },
+        { value: 'female', label: 'Female' },
+        { value: 'non-binary', label: 'Non-binary' },
+        { value: 'prefer-not-to-say', label: 'Prefer not to say' },
+        { value: 'other', label: 'Other' },
+      ],
+      default: 'other',
+    },
   ],
 };
+
+function today(): NgbDateStruct {
+  const today = new Date();
+  return {
+    year: today.getFullYear(),
+    month: today.getMonth() + 1,
+    day: today.getDate(),
+  };
+}
