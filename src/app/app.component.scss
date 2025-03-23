@@ -1,0 +1,17 @@
+.has-error {
+  input {
+    border-color: red;
+  }
+}
+
+.required {
+  &:after {
+    content: " *";
+    color: red;
+  }
+}
+
+.error-text {
+  color: red;
+  font-size: 12px;
+}

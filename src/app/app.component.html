@@ -1,1 +1,54 @@
-<p>hi</p>
+<form [formGroup]="formGroup">
+  @for (field of fields; track $index) {
+    <div
+      class="mb-3"
+      [ngClass]="{
+        'has-error':
+          formGroup.get(field.formControlName)?.invalid &&
+          (formGroup.get(field.formControlName)?.dirty ||
+            formGroup.get(field.formControlName)?.touched),
+      }"
+    >
+      <label class="form-label" [ngClass]="{ required: field.required }">{{
+        field.label
+      }}</label>
+      @if (field.type === "text") {
+        <input
+          class="form-control"
+          [type]="field.type"
+          [placeholder]="field.placeholder"
+          [formControlName]="field.formControlName"
+        />
+      }
+      @if (field.type === "select") {
+        <select class="form-select" [formControlName]="field.formControlName">
+          <option value="" disabled selected>{{ field.placeholder }}</option>
+          @for (option of field.options; track $index) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      }
+      @if (
+        formGroup.get(field.formControlName)?.invalid &&
+        (formGroup.get(field.formControlName)?.dirty ||
+          formGroup.get(field.formControlName)?.touched)
+      ) {
+        <div class="form-text error-text">
+          @if (formGroup.get(field.formControlName)?.errors?.["required"]) {
+            {{ field.errorMessages.required }}
+          }
+          @if (formGroup.get(field.formControlName)?.errors?.["minlength"]) {
+            {{ field.errorMessages.minlength }}
+          }
+          @if (formGroup.get(field.formControlName)?.errors?.["maxlength"]) {
+            {{ field.errorMessages.maxlength }}
+          }
+          @if (formGroup.get(field.formControlName)?.errors?.["email"]) {
+            {{ field.errorMessages.email }}
+          }
+        </div>
+      }
+    </div>
+  }
+  <button type="submit">Submit</button>
+</form>
