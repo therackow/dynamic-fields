@@ -2,7 +2,7 @@
   <div class="row">
     @for (field of fields; track $index) {
       <div
-        class="mb-3 col-4"
+        class="mb-3 col-12 col-lg-4"
         id="{{ field.formControlName }}_group"
         [ngClass]="{
           'has-error':
@@ -11,104 +11,118 @@
               formGroup.get(field.formControlName)?.touched),
         }"
       >
-        @if (field.type === "text") {
-          <label
-            class="form-label"
-            [ngClass]="{ required: field.required }"
-            [for]="field.formControlName"
-            >{{ field.label }}</label
-          >
-          <input
-            class="form-control"
-            [type]="field.type"
-            [placeholder]="field.placeholder"
-            [formControlName]="field.formControlName"
-            [name]="field.formControlName"
-            [id]="field.formControlName"
-          />
-        }
-        @if (field.type === "select") {
-          <label class="form-label" [ngClass]="{ required: field.required }">{{
-            field.label
-          }}</label>
-          <select class="form-select" [formControlName]="field.formControlName">
-            <option value="" disabled>{{ field.placeholder }}</option>
-            @for (option of field.options; track $index) {
-              <option [value]="option.value">{{ option.label }}</option>
-            }
-          </select>
-        }
-        @if (field.type === "date") {
-          <label class="form-label" [ngClass]="{ required: field.required }">{{
-            field.label
-          }}</label>
-          <div class="input-group">
+        @switch (field.type) {
+          @case ("text") {
+            <label
+              class="form-label"
+              [ngClass]="{ required: field.required }"
+              [for]="field.formControlName"
+              >{{ field.label }}</label
+            >
             <input
+              class="form-control"
+              [type]="field.type"
+              [placeholder]="field.placeholder"
+              [formControlName]="field.formControlName"
+              [name]="field.formControlName"
+              [id]="field.formControlName"
+            />
+          }
+          @case ("select") {
+            <label
+              class="form-label"
+              [ngClass]="{ required: field.required }"
+              >{{ field.label }}</label
+            >
+            <select
+              class="form-select"
+              [formControlName]="field.formControlName"
+            >
+              <option value="" disabled>{{ field.placeholder }}</option>
+              @for (option of field.options; track $index) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          }
+          @case ("date") {
+            <label
+              class="form-label"
+              [ngClass]="{ required: field.required }"
+              >{{ field.label }}</label
+            >
+            <div class="input-group">
+              <input
+                class="form-control"
+                [placeholder]="field.placeholder"
+                [formControlName]="field.formControlName"
+                [minDate]="field.validation.minDate"
+                [maxDate]="field.validation.maxDate"
+                ngbDatepicker
+                #d="ngbDatepicker"
+              />
+              <button
+                class="btn btn-outline-secondary"
+                (click)="d.toggle()"
+                type="button"
+                [disabled]="formGroup.get(field.formControlName)?.disabled"
+              >
+                <fa-icon [icon]="calendarIcon" class="fa-fw"></fa-icon>
+              </button>
+            </div>
+          }
+          @case ("textarea") {
+            <label
+              class="form-label"
+              [ngClass]="{ required: field.required }"
+              >{{ field.label }}</label
+            >
+            <textarea
               class="form-control"
               [placeholder]="field.placeholder"
               [formControlName]="field.formControlName"
-              [minDate]="field.validation.minDate"
-              [maxDate]="field.validation.maxDate"
-              ngbDatepicker
-              #d="ngbDatepicker"
-            />
-            <button
-              class="btn btn-outline-secondary"
-              (click)="d.toggle()"
-              type="button"
-              [disabled]="formGroup.get(field.formControlName)?.disabled"
-            >
-              <fa-icon [icon]="calendarIcon" class="fa-fw"></fa-icon>
-            </button>
-          </div>
-        }
-        @if (field.type === "textarea") {
-          <label class="form-label" [ngClass]="{ required: field.required }">{{
-            field.label
-          }}</label>
-          <textarea
-            class="form-control"
-            [placeholder]="field.placeholder"
-            [formControlName]="field.formControlName"
-            (input)="
-              field.characterCount =
-                formGroup.get(field.formControlName)?.value?.length || 0
-            "
-          ></textarea>
-          @if (field.validation?.maxLength) {
-            <div class="character-counter">
-              {{ field.characterCount || 0 }}/{{
-                field.validation.maxLength || "∞"
-              }}
-            </div>
+              (input)="
+                field.characterCount =
+                  formGroup.get(field.formControlName)?.value?.length || 0
+              "
+            ></textarea>
+            @if (field.validation?.maxLength) {
+              <div class="character-counter">
+                {{ field.characterCount || 0 }}/{{
+                  field.validation.maxLength || "∞"
+                }}
+              </div>
+            }
           }
-        }
-        @if (field.type === "checkbox") {
-          <div class="form-check">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              [formControlName]="field.formControlName"
-            />
-            <label class="form-check-label">{{ field.label }}</label>
-          </div>
-        }
-        @if (field.type === "radio") {
-          <label class="form-label" [ngClass]="{ required: field.required }">{{
-            field.label
-          }}</label>
-          @for (option of field.options; track $index) {
+          @case ("checkbox") {
             <div class="form-check">
               <input
                 class="form-check-input"
-                type="radio"
+                type="checkbox"
                 [formControlName]="field.formControlName"
-                [value]="option.value"
               />
-              <label class="form-check-label">{{ option.label }}</label>
+              <label class="form-check-label">{{ field.label }}</label>
             </div>
           }
+          @case ("radio") {
+            <label
+              class="form-label"
+              [ngClass]="{ required: field.required }"
+              >{{ field.label }}</label
+            >
+            @for (option of field.options; track $index) {
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  [formControlName]="field.formControlName"
+                  [value]="option.value"
+                />
+                <label class="form-check-label">{{ option.label }}</label>
+              </div>
+            }
+          }
         }
+
         @if (
           formGroup.get(field.formControlName)?.invalid &&
           (formGroup.get(field.formControlName)?.dirty ||
