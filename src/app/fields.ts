@@ -136,21 +136,35 @@ export const dynamicFields = {
       formControlName: 'isActive',
       type: 'checkbox',
       required: false,
+      default: false,
       validation: {},
       errorMessages: {},
     },
     {
-      label: 'Notes',
-      formControlName: 'notes',
-      type: 'textarea',
-      placeholder: 'Enter any additional notes',
-      required: false,
+      label: 'Active as of',
+      formControlName: 'activeAsOf',
+      type: 'date',
+      placeholder: 'Select the date you became active',
+      required: true,
       validation: {
-        maxLength: 200,
+        required: true,
+        minDate: { year: 1900, month: 1, day: 1 },
+        maxDate: today(),
       },
       errorMessages: {
-        maxlength: 'Notes cannot exceed 200 characters',
+        required: 'Active date is required',
+        minDate: 'Active date must be after 1900-01-01',
+        maxDate: 'Active date cannot be in the future',
       },
+      props: [
+        {
+          name: 'disabled',
+          condition: {
+            field: 'isActive',
+            value: false,
+          },
+        },
+      ],
     },
     {
       label: 'Date of Birth',
@@ -180,7 +194,71 @@ export const dynamicFields = {
         { value: 'prefer-not-to-say', label: 'Prefer not to say' },
         { value: 'other', label: 'Other' },
       ],
-      default: 'other',
+    },
+    {
+      label: 'Explain',
+      formControlName: 'preferNotToSayReason',
+      type: 'text',
+      placeholder: 'Why do you prefer not to say?',
+      required: true,
+      validation: {
+        required: true,
+        minLength: 2,
+        maxLength: 20,
+      },
+      errorMessages: {
+        required: 'Explain is required if you selected "Other"',
+        minlength: 'Explain must be at least 2 characters long',
+        maxlength: 'Explain cannot exceed 20 characters',
+      },
+      props: [
+        {
+          name: 'hidden',
+          condition: {
+            field: 'gender',
+            value: 'prefer-not-to-say',
+          },
+        },
+      ],
+    },
+    {
+      label: 'Other Gender',
+      formControlName: 'otherGender',
+      type: 'text',
+      placeholder: 'What is your gender?',
+      required: true,
+      validation: {
+        required: true,
+        minLength: 2,
+        maxLength: 20,
+      },
+      errorMessages: {
+        required: 'Other gender is required if you selected "Other"',
+        minlength: 'Other gender must be at least 2 characters long',
+        maxlength: 'Other gender cannot exceed 20 characters',
+      },
+      props: [
+        {
+          name: 'hidden',
+          condition: {
+            field: 'gender',
+            value: 'other',
+          },
+        },
+      ],
+    },
+    {
+      label: 'Notes',
+      formControlName: 'notes',
+      type: 'textarea',
+      placeholder: 'Enter any additional notes',
+      required: false,
+      validation: {
+        maxLength: 200,
+      },
+      errorMessages: {
+        maxlength: 'Notes cannot exceed 200 characters',
+      },
     },
   ],
 };
